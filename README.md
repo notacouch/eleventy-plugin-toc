@@ -128,13 +128,18 @@ Always include the safe filter when using Nunjucks.
   listType: 'ol',
   listClass: 'nav-toc-list',
   listItemClass: 'nav-toc-list-item',
-  listItemAnchorClass: 'nav-toc-list-item-anchor'
+  listItemAnchorClass: 'nav-toc-list-item-anchor',
+  skipLink: false,
+  skipLinkClass: 'nav-toc-skip',
+  skipLinkTag: 'a',
+  skipLinkTargetId: 'nav-toc-content',
+  skipLinkText: 'Skip to Content'
 }
 ```
 
 | Option                | Data Type | Description                                        | Notes                                                                                                           |
 | --------------------- | --------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `tags`                | Object     | An array of heading levels to include in the TOC.  | Page titles (i.e. `h1`) should be excluded.                                                                     |
+| `tags`                | Object    | An array of heading levels to include in the TOC.  | Page titles (i.e. `h1`) should be excluded.                                                                     |
 | `wrapper`             | String    | The navigation landmark element of the TOC.        | In most cases use `nav`. If you replace it, be sure it’s valid HTML and accessible.                             |
 | `wrapperClass`        | String    | The CSS class name for the TOC parent element.     | Using an empty string removes the `class` attribute.                                                            |
 | `heading`             | Boolean   | Whether the TOC uses a heading element.            | Using heading text for sections helps everyone.                                                                 |
@@ -145,6 +150,11 @@ Always include the safe filter when using Nunjucks.
 | `listClass`           | String    | The CSS class name for the list.                   | Using an empty string removes the `class` attribute.                                                            |
 | `listItemClass`       | String    | The CSS class name for each list item.             | Using an empty string removes the `class` attribute.                                                            |
 | `listItemAnchorClass` | String    | The CSS class name for each anchor in a list item. | Using an empty string removes the `class` attribute.                                                            |
+| `skipLink`            | Boolean   | Whether to render a skip to content link or not.   | This will appear below the header tag.                                                                          |
+| `skipLinkClass`       | String    | The CSS class name for the skip to content link.   |                                                                                                                 |
+| `skipLinkTag`         | String    | The tag name for the skip to content link.         | In case you opt for a button. The href will still render as is so that could be leveraged with JavaScript.      |
+| `skipLinkTargetId`    | String    | The `id` for the link's href                       |                                                                                                                 |
+| `skipLinkText`        | String    | The text for the skip to content link.             |                                                                                                                 |
 
 ### Override Default Options
 

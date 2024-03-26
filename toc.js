@@ -14,6 +14,11 @@ const cheerio = require( 'cheerio' ),
     listClass: 'nav-toc-list',
     listItemClass: 'nav-toc-list-item',
     listItemAnchorClass: 'nav-toc-list-item-anchor',
+    skipLink: false,
+    skipLinkClass: 'nav-toc-skip',
+    skipLinkTag: 'a',
+    skipLinkTargetId: 'nav-toc-content',
+    skipLinkText: 'Skip to Content',
   };
 
 // Verify "tags" option values are correct
@@ -48,12 +53,12 @@ function checkTags( value, key ) {
   }
 }
 
-// Verify "heading" option value is correct
-function checkHeading( value ) {
+// Verify "heading" and "skipLink" option values are correct
+function checkBoolean( value, key ) {
   const optionToCheck = value;
 
   if ( optionToCheck.length > 0 && typeof optionToCheck !== 'boolean' ) {
-    console.error( '\n⛔ Error (ToC): The “heading” option needs a Boolean value.\n' );
+    console.error( '\n⛔ Error (ToC): The “' + key + '” option needs a Boolean value.\n' );
 
     return false;
   }
@@ -86,15 +91,18 @@ function checkLength( value, key ) {
 
 // Run the checks
 checkTags( defaults.tags, 'tags' );
-checkHeading( defaults.heading );
+checkBoolean( defaults.heading, 'heading' );
 checkTags( defaults.headingLevel, 'headingLevel' );
 checkListType( defaults.listType );
 checkLength( defaults.tags, 'tags' );
 checkLength( defaults.wrapper, 'wrapper' );
-checkLength( defaults.heading, 'heading' );
 checkLength( defaults.headingLevel, 'headingLevel' );
 checkLength( defaults.headingText, 'headingText' );
 checkLength( defaults.listType, 'listType' );
+checkBoolean( defaults.skipLink, 'skipLink' );
+checkLength( defaults.skipLinkTag, 'skipLinkTag' );
+checkLength( defaults.skipLinkText, 'skipLinkText' );
+
 
 function getParent( prev, current ) {
   if ( current.level > prev.level ) {
@@ -201,15 +209,16 @@ class Toc {
   }
 
   html() {
-    const { wrapper, wrapperClass, heading, headingClass, headingLevel, headingText } = this.options,
+    const { wrapper, wrapperClass, heading, headingClass, headingLevel, headingText, skipLink, skipLinkClass, skipLinkTag, skipLinkTargetId, skipLinkText } = this.options,
       root = this.get(),
-      markupWrapperStart = `<${wrapper} role="navigation" aria-label="${headingText}">`,
-      markupWrapperStartClass = `<${wrapper} class="${wrapperClass}" role="navigation" aria-label="${headingText}">`,
-      markupWrapperHeadingStart = `<${wrapper} role="navigation" aria-labelledby="${wrapperClass}">`,
-      markupWrapperHeadingStartClass = `<${wrapper} class="${wrapperClass}" role="navigation" aria-labelledby="${wrapperClass}">`,
-      markupHeading = `<${headingLevel} id="${wrapperClass}">${headingText}</${headingLevel}>`,
-      markupHeadingClass = `<${headingLevel} class="${headingClass}" id="${wrapperClass}">${headingText}</${headingLevel}>`,
-      markupWrapperEnd = `${root.html()}</${wrapper}>`;
+      markupWrapperStart = `<${wrapper} role="navigation" aria-label="${headingText}" id="${wrapperClass}-nav" tabindex="-1">`,
+      markupWrapperStartClass = `<${wrapper} class="${wrapperClass}" role="navigation" aria-label="${headingText}" id="${wrapperClass}-nav" tabindex="-1">`,
+      markupWrapperHeadingStart = `<${wrapper} role="navigation" aria-labelledby="${wrapperClass}" id="${wrapperClass}-nav" tabindex="-1">`,
+      markupWrapperHeadingStartClass = `<${wrapper} class="${wrapperClass}" role="navigation" aria-labelledby="${wrapperClass}" id="${wrapperClass}-nav" tabindex="-1">`,
+      markupHeading = `<${headingLevel} id="${wrapperClass}" tabindex="-1">${headingText}</${headingLevel}>`,
+      markupHeadingClass = `<${headingLevel} class="${headingClass}" id="${wrapperClass}" tabindex="-1">${headingText}</${headingLevel}>`,
+      markupWrapperEnd = `${root.html()}</${wrapper}>`,
+      markupSkipLink = `<${skipLinkTag} href="#${skipLinkTargetId}" class="${skipLinkClass}">${skipLinkText}</${skipLinkTag}>`;
 
     let html = '';
 
@@ -247,6 +256,10 @@ class Toc {
             console.error( 'Please add a heading level.' );
           }
         }
+      }
+
+      if (skipLink) {
+        html += markupSkipLink;
       }
 
       html += markupWrapperEnd;
